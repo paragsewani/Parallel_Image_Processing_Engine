@@ -1,31 +1,31 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
+#include <chrono>
+#include "ThreadPool.h"
 
 using namespace std;
 
 int main()
 {
-    cout << "========== Parallel Image Processing Engine ==========\n\n";
+    cout << "========== ThreadPool Test ==========\n\n";
 
-    string imagePath = "assets/input/test.jpg";
+    ThreadPool pool(4);
 
-    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-
-    if (image.empty())
+    for (int i = 1; i <= 20; i++)
     {
-        cout << "Failed to load image!\n";
-        return -1;
+        pool.submit([i]()
+        {
+            cout << "Task " << i
+                 << " executed by Thread "
+                 << this_thread::get_id()
+                 << endl;
+
+            this_thread::sleep_for(chrono::milliseconds(500));
+        });
     }
 
-    cout << "Image Loaded Successfully!\n\n";
+    pool.wait();
 
-    cout << "Width    : " << image.cols << endl;
-    cout << "Height   : " << image.rows << endl;
-    cout << "Channels : " << image.channels() << endl;
-
-    cv::imwrite("assets/output/output.jpg", image);
-
-    cout << "\nImage saved to assets/output/output.jpg\n";
+    cout << "\nAll tasks completed successfully!\n";
 
     return 0;
 }

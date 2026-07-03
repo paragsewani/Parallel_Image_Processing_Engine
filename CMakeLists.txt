@@ -9,6 +9,7 @@ find_package(OpenCV CONFIG REQUIRED)
 
 add_executable(Parallel_Image_Processing_Engine
     src/main.cpp
+    src/ThreadPool.cpp
 )
 
 target_include_directories(Parallel_Image_Processing_Engine PRIVATE
