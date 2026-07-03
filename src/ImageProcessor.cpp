@@ -154,6 +154,11 @@ const cv::Mat& ImageProcessor::getOutputImage() const
     return outputImage;
 }
 
+unsigned int ImageProcessor::getThreadCount() const
+{
+    return threadCount;
+}
+
 void ImageProcessor::reset()
 {
     if (!inputImage.empty())

@@ -39,6 +39,8 @@ public:
 
     const cv::Mat& getOutputImage() const;
 
+    unsigned int getThreadCount() const;
+
     void reset();
 
     double convertToGraySequential();
