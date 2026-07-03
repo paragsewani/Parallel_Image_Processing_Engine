@@ -7,10 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV CONFIG REQUIRED)
 
-add_executable(Parallel_Image_Processing_Engine
+ add_executable(Parallel_Image_Processing_Engine
     src/main.cpp
     src/ThreadPool.cpp
+    src/ImageProcessor.cpp
+    src/Filters.cpp
+    src/Benchmark.cpp
 )
+  
 
 target_include_directories(Parallel_Image_Processing_Engine PRIVATE
     include

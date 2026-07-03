@@ -7,6 +7,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include <utility>
 
 using namespace std;
 
@@ -17,7 +18,25 @@ public:
 
     ~ThreadPool();
 
-    void submit(function<void()> task);
+    // Prevent copying
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+
+    // Allow moving (optional but good practice)
+    ThreadPool(ThreadPool&&) = default;
+    ThreadPool& operator=(ThreadPool&&) = default;
+
+    template<typename F>
+    void submit(F&& task)
+    {
+        {
+            unique_lock<mutex> lock(queueMutex);
+
+            tasks.emplace(forward<F>(task));
+        }
+
+        taskCondition.notify_one();
+    }
 
     void wait();
 

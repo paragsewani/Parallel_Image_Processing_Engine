@@ -1,31 +1,37 @@
 #include <iostream>
-#include <chrono>
-#include "ThreadPool.h"
+
+#include "ImageProcessor.h"
+#include "Benchmark.h"
 
 using namespace std;
 
 int main()
 {
-    cout << "========== ThreadPool Test ==========\n\n";
+    ImageProcessor processor;
 
-    ThreadPool pool(4);
-
-    for (int i = 1; i <= 20; i++)
+    if (!processor.loadImage("assets/input/test.jpg"))
     {
-        pool.submit([i]()
-        {
-            cout << "Task " << i
-                 << " executed by Thread "
-                 << this_thread::get_id()
-                 << endl;
-
-            this_thread::sleep_for(chrono::milliseconds(500));
-        });
+        return -1;
     }
 
-    pool.wait();
+    double sequentialTime = processor.convertToGraySequential();
 
-    cout << "\nAll tasks completed successfully!\n";
+    processor.saveImage("assets/output/sequential.jpg");
+
+    processor.reset();
+
+    processor.convertToGrayParallel();
+
+    double parallelTime = processor.getLastExecutionTime();
+
+    processor.saveImage("assets/output/parallel.jpg");
+
+    cout << "\n========== Benchmark ==========\n";
+    cout << "Sequential : " << sequentialTime << " ms\n";
+    cout << "Parallel   : " << parallelTime << " ms\n";
+    cout << "Speedup    : "
+         << Benchmark::calculateSpeedup(sequentialTime, parallelTime)
+         << "x\n";
 
     return 0;
 }

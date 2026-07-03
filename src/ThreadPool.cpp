@@ -26,7 +26,7 @@ ThreadPool::ThreadPool(size_t numThreads)
                     task = move(tasks.front());
                     tasks.pop();
 
-                    activeTasks++;
+                    ++activeTasks;
                 }
 
                 task();
@@ -34,7 +34,7 @@ ThreadPool::ThreadPool(size_t numThreads)
                 {
                     unique_lock<mutex> lock(queueMutex);
 
-                    activeTasks--;
+                    --activeTasks;
 
                     if (tasks.empty() && activeTasks == 0)
                     {
@@ -62,17 +62,6 @@ ThreadPool::~ThreadPool()
             worker.join();
         }
     }
-}
-
-void ThreadPool::submit(function<void()> task)
-{
-    {
-        unique_lock<mutex> lock(queueMutex);
-
-        tasks.push(move(task));
-    }
-
-    taskCondition.notify_one();
 }
 
 void ThreadPool::wait()
